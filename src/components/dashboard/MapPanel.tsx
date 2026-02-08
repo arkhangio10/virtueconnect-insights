@@ -94,7 +94,7 @@ const MapPanel = () => {
       <div className="p-4 md:p-5 border-b border-border space-y-3">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-base md:text-lg font-bold text-foreground">Facility Map — Ghana</h3>
+            <h3 className="text-base md:text-lg font-bold text-foreground">Facility Map — Global</h3>
             <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
               Drag to pan · Scroll to zoom · Click markers
             </p>

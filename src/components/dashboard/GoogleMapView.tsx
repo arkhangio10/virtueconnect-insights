@@ -5,8 +5,8 @@ import { Map, Satellite, Mountain, Layers, LocateFixed, Loader2 } from "lucide-r
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyBjIIDtqZBwTXwYEI6o-OzDk6WshdnKT40";
 
-// Ghana center coordinates
-const GHANA_CENTER = { lat: 7.9465, lng: -1.0232 };
+// Default center (world view)
+const DEFAULT_CENTER = { lat: 20, lng: 0 };
 
 const mapStyles: google.maps.MapTypeStyle[] = [
   { elementType: "geometry", stylers: [{ color: "#f0f4f8" }] },
@@ -127,17 +127,8 @@ const GoogleMapView = ({ markers, selectedMarkerName, onMarkerClick }: GoogleMap
       mapTypeControl: false,
       streetViewControl: false,
       fullscreenControl: false,
-      minZoom: 6,
-      maxZoom: 15,
-      restriction: {
-        latLngBounds: {
-          north: 12.5,
-          south: 3.5,
-          west: -4.5,
-          east: 2.5,
-        },
-        strictBounds: false,
-      },
+      minZoom: 2,
+      maxZoom: 18,
     }),
     [isLoaded]
   );
@@ -184,8 +175,8 @@ const GoogleMapView = ({ markers, selectedMarkerName, onMarkerClick }: GoogleMap
     <div className="w-full aspect-[4/3] sm:aspect-[16/10] relative">
       <GoogleMap
         mapContainerStyle={containerStyle}
-        center={GHANA_CENTER}
-        zoom={7}
+        center={DEFAULT_CENTER}
+        zoom={3}
         options={mapOptions}
         mapTypeId={mapTypeId}
         onLoad={onLoad}
