@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LayoutDashboard, Shield, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Shield, ChevronLeft, ChevronRight, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AppSidebarProps {
@@ -13,56 +13,87 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
   return (
     <aside
       className={cn(
-        "flex flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 h-screen sticky top-0",
-        collapsed ? "w-16" : "w-56"
+        "flex flex-col border-r border-sidebar-border transition-all duration-300 h-screen sticky top-0",
+        collapsed ? "w-[72px]" : "w-64"
       )}
       style={{ backgroundColor: "hsl(var(--sidebar-background))" }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-2.5 px-4 h-14 border-b border-sidebar-border">
-        <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center flex-shrink-0 shadow-sm">
-          <span className="text-primary-foreground font-bold text-xs">VC</span>
+      <div className="flex items-center gap-3 px-4 h-16 border-b border-sidebar-border">
+        <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center flex-shrink-0 shadow-sm">
+          <span className="text-primary-foreground font-bold text-sm">VC</span>
         </div>
         {!collapsed && (
-          <span className="text-sm font-bold tracking-tight text-sidebar-foreground truncate">
-            VirtueConnect
-          </span>
+          <div className="min-w-0">
+            <span className="text-base font-bold tracking-tight text-sidebar-foreground block">
+              VirtueConnect
+            </span>
+            <span className="text-xs text-sidebar-foreground/50">Ghana Health Platform</span>
+          </div>
         )}
       </div>
 
+      {/* Status */}
+      {!collapsed && (
+        <div className="mx-4 mt-4 mb-2 flex items-center gap-2 px-3 py-2 rounded-lg bg-sidebar-accent/50 border border-sidebar-border">
+          <Activity className="w-3.5 h-3.5 text-success flex-shrink-0" />
+          <span className="text-xs font-medium text-success">System Active</span>
+          <span className="text-[10px] font-mono text-sidebar-foreground/40 ml-auto">v2.1</span>
+        </div>
+      )}
+
       {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-1">
+      <nav className="flex-1 p-3 space-y-1.5 mt-2">
         <button
           onClick={() => onViewChange("dashboard")}
           className={cn(
-            "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+            "w-full flex items-center gap-3 px-3 py-3 rounded-xl text-[15px] font-medium transition-all duration-200",
             activeView === "dashboard"
-              ? "bg-sidebar-primary/15 text-sidebar-primary"
+              ? "bg-sidebar-primary/15 text-sidebar-primary shadow-sm"
               : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
           )}
         >
-          <LayoutDashboard className="w-4 h-4 flex-shrink-0" />
-          {!collapsed && <span>NGO Dashboard</span>}
+          <LayoutDashboard className="w-5 h-5 flex-shrink-0" />
+          {!collapsed && (
+            <div className="text-left min-w-0">
+              <span className="block">Dashboard</span>
+              <span className="text-[11px] opacity-60 block">Mapa y métricas</span>
+            </div>
+          )}
         </button>
 
         <button
           onClick={() => onViewChange("patientsafe")}
           className={cn(
-            "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+            "w-full flex items-center gap-3 px-3 py-3 rounded-xl text-[15px] font-medium transition-all duration-200",
             activeView === "patientsafe"
-              ? "bg-sidebar-primary/15 text-sidebar-primary"
+              ? "bg-sidebar-primary/15 text-sidebar-primary shadow-sm"
               : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
           )}
         >
-          <Shield className="w-4 h-4 flex-shrink-0" />
-          {!collapsed && <span>PatientSafe</span>}
+          <Shield className="w-5 h-5 flex-shrink-0" />
+          {!collapsed && (
+            <div className="text-left min-w-0">
+              <span className="block">PatientSafe</span>
+              <span className="text-[11px] opacity-60 block">Consulta clínica</span>
+            </div>
+          )}
         </button>
       </nav>
+
+      {/* Footer */}
+      {!collapsed && (
+        <div className="px-4 py-3 border-t border-sidebar-border">
+          <p className="text-[11px] text-sidebar-foreground/40 leading-relaxed">
+            Forensic health data layer for healthcare professionals in Ghana.
+          </p>
+        </div>
+      )}
 
       {/* Collapse Toggle */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="flex items-center justify-center h-10 border-t border-sidebar-border text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors"
+        className="flex items-center justify-center h-12 border-t border-sidebar-border text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors"
       >
         {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
       </button>

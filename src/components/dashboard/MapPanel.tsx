@@ -124,10 +124,10 @@ const MapPanel = () => {
   return (
     <div className="bg-card rounded-xl border border-border overflow-hidden animate-fade-in shadow-sm">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border-b border-border gap-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 border-b border-border gap-3">
         <div>
-          <h3 className="text-base font-semibold text-foreground">Facility Map — Ghana</h3>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <h3 className="text-lg font-bold text-foreground">Facility Map — Ghana</h3>
+          <p className="text-sm text-muted-foreground mt-1">
             Click markers to inspect · Scroll to zoom · Drag to pan
           </p>
         </div>
@@ -240,9 +240,9 @@ const MapPanel = () => {
         {selectedMarker && (
           <div className="absolute bottom-3 left-3 right-3 sm:left-auto sm:right-3 sm:w-72 bg-card/95 border border-border rounded-xl p-4 shadow-xl backdrop-blur-md z-20 animate-fade-in">
             <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className={cn("w-2.5 h-2.5 rounded-full", statusColors[selectedMarker.status])} />
-                <h4 className="text-base font-semibold text-foreground">{selectedMarker.name}</h4>
+                <div className="flex items-center gap-2">
+                <div className={cn("w-3 h-3 rounded-full", statusColors[selectedMarker.status])} />
+                <h4 className="text-base font-bold text-foreground">{selectedMarker.name}</h4>
               </div>
               <button onClick={() => setSelectedMarker(null)} className="text-muted-foreground hover:text-foreground transition-colors">
                 <X className="w-4 h-4" />
@@ -308,20 +308,20 @@ const MapPanel = () => {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-5 px-4 py-3 border-t border-border">
-        <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-success" />
-          <span className="text-xs text-muted-foreground">Validated ({counts.validated})</span>
+      <div className="flex items-center gap-6 px-5 py-3.5 border-t border-border">
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-success" />
+          <span className="text-sm text-muted-foreground">Validated ({counts.validated})</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-warning" />
-          <span className="text-xs text-muted-foreground">Uncertain ({counts.uncertain})</span>
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-warning" />
+          <span className="text-sm text-muted-foreground">Uncertain ({counts.uncertain})</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-danger" />
-          <span className="text-xs text-muted-foreground">Anomaly ({counts.anomaly})</span>
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-danger" />
+          <span className="text-sm text-muted-foreground">Anomaly ({counts.anomaly})</span>
         </div>
-        <div className="ml-auto text-xs font-mono text-muted-foreground">
+        <div className="ml-auto text-sm font-mono text-muted-foreground">
           {filteredMarkers.length} facilities
         </div>
       </div>

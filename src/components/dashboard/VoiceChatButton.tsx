@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mic, MicOff, X, MessageCircle, Send } from "lucide-react";
+import { Mic, MicOff, X, MessageCircle, Send, Stethoscope } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const VoiceChatButton = () => {
@@ -7,7 +7,7 @@ const VoiceChatButton = () => {
   const [isListening, setIsListening] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [messages, setMessages] = useState<{ role: "user" | "assistant"; text: string }[]>([
-    { role: "assistant", text: "Hello! I'm your VirtueConnect voice assistant. Ask me about facility data, anomalies, or regional reports." },
+    { role: "assistant", text: "Welcome, Doctor. I'm your VirtueConnect assistant. Ask about facility data, anomalies, regional reports, or patient referrals." },
   ]);
 
   const toggleListening = () => {
@@ -37,7 +37,7 @@ const VoiceChatButton = () => {
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", text: `Analyzing your query: "${userText}". Based on facility data, I found relevant results across the Ghana healthcare network.` },
+        { role: "assistant", text: `Analyzing: "${userText}". Cross-referencing verified facility data across Ghana's healthcare network...` },
       ]);
     }, 1200);
   };
@@ -59,20 +59,21 @@ const VoiceChatButton = () => {
 
       {/* Voice Chat Panel */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-96 bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-fade-in">
+        <div className="fixed bottom-24 right-6 z-50 w-[420px] bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-fade-in">
           {/* Header */}
           <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-3">
               <div className="w-2.5 h-2.5 rounded-full bg-success animate-pulse" />
-              <h4 className="text-base font-semibold text-foreground">Voice Assistant</h4>
+              <Stethoscope className="w-5 h-5 text-primary" />
+              <h4 className="text-base font-bold text-foreground">Clinical Assistant</h4>
             </div>
-            <span className="text-xs font-mono text-muted-foreground bg-secondary px-2.5 py-1 rounded-full">
-              AI · Live
+            <span className="text-xs font-mono text-muted-foreground bg-secondary px-3 py-1 rounded-full border border-border">
+              AI · Active
             </span>
           </div>
 
           {/* Messages */}
-          <div className="h-72 overflow-y-auto p-4 space-y-3">
+          <div className="h-80 overflow-y-auto p-5 space-y-4">
             {messages.map((msg, i) => (
               <div
                 key={i}
@@ -96,8 +97,8 @@ const VoiceChatButton = () => {
             {isListening && (
               <div className="flex justify-center">
                 <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-danger/10 border border-danger/20">
-                  <div className="w-2 h-2 rounded-full bg-danger animate-pulse" />
-                  <span className="text-xs font-medium text-danger">Listening...</span>
+                  <div className="w-2.5 h-2.5 rounded-full bg-danger animate-pulse" />
+                  <span className="text-sm font-medium text-danger">Listening...</span>
                   <div className="flex gap-0.5">
                     {[1, 2, 3, 4].map((i) => (
                       <div
@@ -115,23 +116,22 @@ const VoiceChatButton = () => {
             )}
           </div>
 
-          {/* Input Area — Voice + Text */}
-          <div className="px-4 py-3 border-t border-border space-y-3">
-            {/* Text Input */}
+          {/* Input Area */}
+          <div className="px-5 py-4 border-t border-border space-y-3">
             <div className="flex items-center gap-2">
               <input
                 type="text"
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleTextSend()}
-                placeholder="Type your question..."
-                className="flex-1 bg-secondary border border-border rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                placeholder="Ask about facilities, data, or patients..."
+                className="flex-1 bg-secondary border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
               <button
                 onClick={handleTextSend}
                 disabled={!textInput.trim()}
                 className={cn(
-                  "w-10 h-10 rounded-lg flex items-center justify-center transition-all",
+                  "w-11 h-11 rounded-xl flex items-center justify-center transition-all",
                   textInput.trim()
                     ? "bg-primary text-primary-foreground hover:bg-primary/90"
                     : "bg-secondary text-muted-foreground cursor-not-allowed"
@@ -141,7 +141,6 @@ const VoiceChatButton = () => {
               </button>
             </div>
 
-            {/* Mic Button */}
             <div className="flex items-center justify-center gap-3">
               <span className="text-xs text-muted-foreground">or use voice</span>
               <button
