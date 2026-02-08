@@ -1,21 +1,44 @@
 import { MapPin, AlertCircle, Users, Building, Stethoscope, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const items = [
-  { icon: MapPin, iconClass: "text-primary", label: "Region", value: "Northern Region" },
-  { icon: AlertCircle, iconClass: "text-danger", label: "Critical Gap", value: "Missing Ultrasound OB" },
-  { icon: Users, iconClass: "text-warning", label: "Impact", value: "15,000 women < 2h access" },
-  { icon: Building, iconClass: "text-primary", label: "Candidate", value: "Tamale Teaching Hospital" },
-  { icon: Stethoscope, iconClass: "text-success", label: "Intervention", value: "Deploy mobile OB unit" },
-];
+import { useFacilitiesData } from "@/hooks/useFacilitiesData";
 
 const ActionPlanCard = () => {
+  const { actionPlan, loading } = useFacilitiesData();
+
+  const items = [
+    { icon: MapPin, iconClass: "text-primary", label: "Region", value: loading ? "Loading..." : actionPlan.region },
+    {
+      icon: AlertCircle,
+      iconClass: "text-danger",
+      label: "Critical Gap",
+      value: loading ? "Loading..." : actionPlan.gap,
+    },
+    {
+      icon: Users,
+      iconClass: "text-warning",
+      label: "Impact",
+      value: loading ? "Loading..." : actionPlan.impact,
+    },
+    {
+      icon: Building,
+      iconClass: "text-primary",
+      label: "Candidate",
+      value: loading ? "Loading..." : actionPlan.candidate,
+    },
+    {
+      icon: Stethoscope,
+      iconClass: "text-success",
+      label: "Intervention",
+      value: loading ? "Loading..." : actionPlan.intervention,
+    },
+  ];
+
   return (
     <div className="bg-card rounded-xl border border-border p-6 shadow-sm animate-fade-in h-full flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-card-foreground">Action Plan</h3>
         <span className="text-xs font-mono bg-warning/12 text-warning px-3 py-1.5 rounded-full font-semibold border border-warning/20">
-          Priority: High
+          Priority: {loading ? "..." : actionPlan.severityLabel}
         </span>
       </div>
 

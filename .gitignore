@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Security
+.env
+
+# Runtime data
+data/conversations/*
+data/uploads/*
+!data/conversations/.gitkeep
+!data/uploads/.gitkeep

@@ -1,5 +1,6 @@
 import { Building2, HeartPulse, AlertTriangle, MapPinOff } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useFacilitiesData } from "@/hooks/useFacilitiesData";
 
 interface MetricCardProps {
   icon: React.ReactNode;
@@ -34,40 +35,49 @@ const MetricCard = ({ icon, label, value, change, changeType }: MetricCardProps)
 );
 
 const MetricsRow = () => {
-  const metrics: MetricCardProps[] = [
+  const { metrics, loading } = useFacilitiesData();
+
+  const formatNumber = (value: number) => new Intl.NumberFormat("en-US").format(value);
+  const formatPercent = (value: number) => `${Math.round(value * 100)}%`;
+
+  const metricCards: MetricCardProps[] = [
     {
       icon: <Building2 className="w-5 h-5 md:w-6 md:h-6 text-primary" />,
       label: "Total Facilities",
-      value: "4,218",
-      change: "+12",
-      changeType: "positive",
+      value: loading ? "—" : formatNumber(metrics.totalFacilities),
+      change: "LIVE",
+      changeType: "neutral",
     },
     {
       icon: <HeartPulse className="w-5 h-5 md:w-6 md:h-6 text-success" />,
       label: "Safe C-Section",
-      value: "1,847",
-      change: "43.8%",
+      value: loading ? "—" : formatNumber(metrics.safeCSection),
+      change: loading ? "—" : formatPercent(metrics.cSectionCoverage),
       changeType: "positive",
     },
     {
       icon: <AlertTriangle className="w-5 h-5 md:w-6 md:h-6 text-warning" />,
       label: "High-Risk Anomalies",
-      value: "312",
-      change: "+8",
+      value: loading ? "—" : formatNumber(metrics.highRiskAnomalies),
+      change: loading
+        ? "—"
+        : formatPercent(
+            metrics.totalFacilities === 0 ? 0 : metrics.highRiskAnomalies / metrics.totalFacilities
+          ),
       changeType: "negative",
     },
     {
       icon: <MapPinOff className="w-5 h-5 md:w-6 md:h-6 text-danger" />,
       label: "Medical Deserts",
-      value: "67",
-      change: "+3",
+      value: loading ? "—" : formatNumber(metrics.medicalDesertRegions),
+      change: loading ? "—" : `${metrics.medicalDesertRegions} regions`,
       changeType: "neutral",
     },
   ];
 
   return (
     <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
-      {metrics.map((metric, i) => (
+      {metricCards.map((metric, i) => (
         <MetricCard key={i} {...metric} />
       ))}
     </div>

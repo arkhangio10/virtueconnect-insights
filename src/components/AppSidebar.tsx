@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LayoutDashboard, Shield, ChevronLeft, ChevronRight, Activity, Menu, X, HeartPulse } from "lucide-react";
+import { LayoutDashboard, Shield, ChevronLeft, ChevronRight, Activity, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AppSidebarProps {
@@ -20,13 +20,11 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
     <>
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 h-16 border-b border-sidebar-border">
-        <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center flex-shrink-0 shadow-sm">
-          <HeartPulse className="w-5 h-5 text-primary-foreground" />
-        </div>
+        <img src="/logo.png" alt="CareBridge" className="w-14 h-14 object-contain rounded-lg bg-white p-0.5 shadow-sm" />
         {(!collapsed || mobileOpen) && (
           <div className="min-w-0 flex-1">
             <span className="text-base font-bold tracking-tight text-sidebar-foreground block">
-              VirtueConnect
+              CareBridge
             </span>
             <span className="text-xs text-sidebar-foreground/50">Ghana Health Platform</span>
           </div>
@@ -120,10 +118,8 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
         >
           <Menu className="w-5 h-5" />
         </button>
-        <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center flex-shrink-0">
-          <HeartPulse className="w-4 h-4 text-primary-foreground" />
-        </div>
-        <span className="text-sm font-bold text-sidebar-foreground">VirtueConnect</span>
+        <img src="/logo.png" alt="CareBridge" className="w-10 h-10 object-contain rounded-lg bg-white p-0.5 shadow-sm" />
+        <span className="text-sm font-bold text-sidebar-foreground">CareBridge</span>
       </div>
 
       {/* Mobile Overlay */}
