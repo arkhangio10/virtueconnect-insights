@@ -1,10 +1,21 @@
 import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { ZoomIn, ZoomOut, RotateCcw, Maximize2, Locate, Info, X } from "lucide-react";
+import { ZoomIn, ZoomOut, RotateCcw, Maximize2, Locate, Info, X, Search } from "lucide-react";
 import ghanaMap from "@/assets/ghana-map.jpg";
 
 const categories = ["Maternity", "Trauma", "Infrastructure"] as const;
 type Category = (typeof categories)[number];
+
+const specialties = [
+  "All Specialties",
+  "OB/GYN",
+  "Emergency Medicine",
+  "Pediatrics",
+  "General Surgery",
+  "Internal Medicine",
+  "Cardiology",
+  "Orthopedics",
+] as const;
 
 interface FacilityMarker {
   x: number;
@@ -54,6 +65,7 @@ const statusText = {
 
 const MapPanel = () => {
   const [activeCategory, setActiveCategory] = useState<Category>("Maternity");
+  const [selectedSpecialty, setSelectedSpecialty] = useState<string>("All Specialties");
   const [hoveredMarker, setHoveredMarker] = useState<string | null>(null);
   const [selectedMarker, setSelectedMarker] = useState<FacilityMarker | null>(null);
   const [zoom, setZoom] = useState(1);
@@ -124,21 +136,21 @@ const MapPanel = () => {
   return (
     <div className="bg-card rounded-xl border border-border overflow-hidden animate-fade-in shadow-sm">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 border-b border-border gap-3">
-        <div>
-          <h3 className="text-lg font-bold text-foreground">Facility Map — Ghana</h3>
-          <p className="text-sm text-muted-foreground mt-1">
-            Click markers to inspect · Scroll to zoom · Drag to pan
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-secondary rounded-lg p-1 border border-border">
+      <div className="p-4 md:p-5 border-b border-border space-y-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <h3 className="text-base md:text-lg font-bold text-foreground">Facility Map — Ghana</h3>
+            <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
+              Click markers · Scroll to zoom · Drag to pan
+            </p>
+          </div>
+          <div className="flex items-center gap-1 bg-secondary rounded-lg p-1 border border-border w-full sm:w-auto">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => { setActiveCategory(cat); setSelectedMarker(null); }}
                 className={cn(
-                  "px-3 py-1.5 text-sm font-medium rounded-md transition-all",
+                  "flex-1 sm:flex-none px-3 py-1.5 text-xs md:text-sm font-medium rounded-md transition-all text-center",
                   activeCategory === cat
                     ? "bg-primary text-primary-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
@@ -148,6 +160,20 @@ const MapPanel = () => {
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Specialty Filter */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+          <select
+            value={selectedSpecialty}
+            onChange={(e) => setSelectedSpecialty(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 md:py-2.5 rounded-lg border border-border bg-secondary text-sm text-foreground appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/30"
+          >
+            {specialties.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
         </div>
       </div>
 
