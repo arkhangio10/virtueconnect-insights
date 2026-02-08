@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import MapPanel from "@/components/dashboard/MapPanel";
 import {
   AlertTriangle,
   Send,
@@ -517,6 +518,9 @@ const PatientSafeView = () => {
           </div>
         )}
       </div>
+
+      {/* Map Panel */}
+      <MapPanel />
     </div>
   );
 };
