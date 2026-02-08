@@ -8,20 +8,22 @@ const GOOGLE_MAPS_API_KEY = "AIzaSyBjIIDtqZBwTXwYEI6o-OzDk6WshdnKT40";
 const GHANA_CENTER = { lat: 7.9465, lng: -1.0232 };
 
 const mapStyles: google.maps.MapTypeStyle[] = [
-  { elementType: "geometry", stylers: [{ color: "#1a2332" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#1a2332" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#6b8cae" }] },
-  { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#3a5a7c" }] },
-  { featureType: "administrative.province", elementType: "geometry.stroke", stylers: [{ color: "#2a4a6c" }, { weight: 0.8 }] },
-  { featureType: "water", elementType: "geometry", stylers: [{ color: "#0e1a2a" }] },
-  { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#3a5a7c" }] },
-  { featureType: "road", elementType: "geometry", stylers: [{ color: "#243447" }] },
-  { featureType: "road", elementType: "labels", stylers: [{ visibility: "off" }] },
-  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#2c4a62" }] },
-  { featureType: "poi", stylers: [{ visibility: "off" }] },
+  { elementType: "geometry", stylers: [{ color: "#f0f4f8" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#ffffff" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#4a6a8a" }] },
+  { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#4B92DB" }, { weight: 1.5 }] },
+  { featureType: "administrative.province", elementType: "geometry.stroke", stylers: [{ color: "#a0c4e8" }, { weight: 0.8 }] },
+  { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#2c5282" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#c6ddf0" }] },
+  { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#4B92DB" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#e2e8f0" }] },
+  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#cbd5e1" }] },
+  { featureType: "road", elementType: "labels", stylers: [{ visibility: "simplified" }] },
+  { featureType: "poi", elementType: "geometry", stylers: [{ color: "#e8f0e8" }] },
+  { featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] },
   { featureType: "transit", stylers: [{ visibility: "off" }] },
-  { featureType: "landscape.natural", elementType: "geometry", stylers: [{ color: "#1e3040" }] },
-  { featureType: "landscape.man_made", elementType: "geometry", stylers: [{ color: "#1a2838" }] },
+  { featureType: "landscape.natural", elementType: "geometry", stylers: [{ color: "#e8eef4" }] },
+  { featureType: "landscape.man_made", elementType: "geometry", stylers: [{ color: "#f0f4f8" }] },
 ];
 
 export interface MapMarker {
@@ -140,7 +142,7 @@ const GoogleMapView = ({ markers, selectedMarkerName, onMarkerClick }: GoogleMap
 
   if (!isLoaded) {
     return (
-      <div className="w-full aspect-[4/3] sm:aspect-[16/10] bg-[#1a2332] flex items-center justify-center">
+      <div className="w-full aspect-[4/3] sm:aspect-[16/10] bg-secondary flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           <p className="text-sm text-muted-foreground">Loading map...</p>
