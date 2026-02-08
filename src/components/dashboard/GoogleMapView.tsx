@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { GoogleMap, useJsApiLoader, MarkerF, InfoWindowF } from "@react-google-maps/api";
 import { cn } from "@/lib/utils";
 import { Map, Satellite, Mountain, Layers, LocateFixed, Loader2 } from "lucide-react";
@@ -141,15 +141,21 @@ const GoogleMapView = ({ markers, selectedMarkerName, onMarkerClick }: GoogleMap
     setMap(null);
   }, []);
 
+  // Pan to selected marker when it changes (e.g. from facility list)
+  useEffect(() => {
+    if (!map || !selectedMarkerName) return;
+    const target = markers.find((m) => m.name === selectedMarkerName);
+    if (target) {
+      map.panTo({ lat: target.lat, lng: target.lng });
+      map.setZoom(Math.max(map.getZoom() || 8, 10));
+    }
+  }, [map, selectedMarkerName, markers]);
+
   const handleMarkerClick = useCallback(
     (marker: MapMarker) => {
       onMarkerClick?.(marker);
-      if (map) {
-        map.panTo({ lat: marker.lat, lng: marker.lng });
-        map.setZoom(Math.max(map.getZoom() || 8, 10));
-      }
     },
-    [onMarkerClick, map]
+    [onMarkerClick]
   );
 
   if (loadError) {
