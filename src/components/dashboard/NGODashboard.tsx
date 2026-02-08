@@ -30,7 +30,7 @@ const NGODashboard = () => {
         </div>
       </div>
 
-      {/* Quick Commands */}
+      {/* Quick Commands — below map */}
       <QuickCommands />
 
       {/* Voice Chat FAB */}
