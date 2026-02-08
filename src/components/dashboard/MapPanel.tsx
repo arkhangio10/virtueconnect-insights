@@ -173,10 +173,6 @@ const MapPanel = () => {
                 <p className="text-muted-foreground">Category</p>
                 <p className="font-medium text-foreground">{selectedMarker.category}</p>
               </div>
-              <div>
-                <p className="text-muted-foreground">Coordinates</p>
-                <p className="font-mono text-foreground">{selectedMarker.lat.toFixed(2)}°, {selectedMarker.lng.toFixed(2)}°</p>
-              </div>
             </div>
           </div>
         )}
