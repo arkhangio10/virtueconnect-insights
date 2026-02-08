@@ -7,23 +7,21 @@ interface MetricCardProps {
   value: string;
   change: string;
   changeType: "positive" | "negative" | "neutral";
-  glowClass?: string;
 }
 
-const MetricCard = ({ icon, label, value, change, changeType, glowClass }: MetricCardProps) => (
-  <div
-    className={cn(
-      "gradient-card rounded-xl border border-border p-5 transition-all duration-300 hover:border-primary/30 animate-fade-in",
-      glowClass
-    )}
-  >
-    <div className="flex items-start justify-between mb-3">
-      <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
+const MetricCard = ({ icon, label, value, change, changeType }: MetricCardProps) => (
+  <div className="gradient-card rounded-xl border border-border p-4 animate-fade-in">
+    <div className="flex items-center gap-3">
+      <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
         {icon}
+      </div>
+      <div className="min-w-0">
+        <p className="text-lg font-bold text-foreground tracking-tight">{value}</p>
+        <p className="text-[11px] text-muted-foreground truncate">{label}</p>
       </div>
       <span
         className={cn(
-          "text-xs font-mono font-medium px-2 py-0.5 rounded-full",
+          "ml-auto text-[10px] font-mono font-medium px-2 py-0.5 rounded-full whitespace-nowrap",
           changeType === "positive" && "bg-success/10 text-success",
           changeType === "negative" && "bg-danger/10 text-danger",
           changeType === "neutral" && "bg-warning/10 text-warning"
@@ -32,49 +30,43 @@ const MetricCard = ({ icon, label, value, change, changeType, glowClass }: Metri
         {change}
       </span>
     </div>
-    <p className="text-2xl font-bold text-foreground tracking-tight">{value}</p>
-    <p className="text-xs text-muted-foreground mt-1">{label}</p>
   </div>
 );
 
 const MetricsRow = () => {
   const metrics: MetricCardProps[] = [
     {
-      icon: <Building2 className="w-5 h-5 text-primary" />,
+      icon: <Building2 className="w-4 h-4 text-primary" />,
       label: "Total Facilities",
       value: "4,218",
-      change: "+12 this week",
+      change: "+12",
       changeType: "positive",
-      glowClass: "card-glow",
     },
     {
-      icon: <HeartPulse className="w-5 h-5 text-success" />,
-      label: "Facilities with Safe C-Section",
+      icon: <HeartPulse className="w-4 h-4 text-success" />,
+      label: "Safe C-Section",
       value: "1,847",
       change: "43.8%",
       changeType: "positive",
-      glowClass: "card-glow-success",
     },
     {
-      icon: <AlertTriangle className="w-5 h-5 text-warning" />,
+      icon: <AlertTriangle className="w-4 h-4 text-warning" />,
       label: "High-Risk Anomalies",
       value: "312",
-      change: "+8 flagged",
+      change: "+8",
       changeType: "negative",
-      glowClass: "card-glow-accent",
     },
     {
-      icon: <MapPinOff className="w-5 h-5 text-danger" />,
-      label: "Medical Deserts Detected",
+      icon: <MapPinOff className="w-4 h-4 text-danger" />,
+      label: "Medical Deserts",
       value: "67",
-      change: "3 new regions",
+      change: "+3",
       changeType: "neutral",
-      glowClass: "card-glow-danger",
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
       {metrics.map((metric, i) => (
         <MetricCard key={i} {...metric} />
       ))}
