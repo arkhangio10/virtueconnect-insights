@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { GoogleMap, useJsApiLoader, MarkerF, InfoWindowF } from "@react-google-maps/api";
 import { cn } from "@/lib/utils";
+import { Map, Satellite, Mountain, Layers } from "lucide-react";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyBjIIDtqZBwTXwYEI6o-OzDk6WshdnKT40";
 
@@ -79,6 +80,15 @@ const containerStyle = {
   height: "100%",
 };
 
+const mapTypeOptions = [
+  { id: "roadmap", label: "Mapa", icon: Map },
+  { id: "satellite", label: "Satélite", icon: Satellite },
+  { id: "terrain", label: "Terreno", icon: Mountain },
+  { id: "hybrid", label: "Híbrido", icon: Layers },
+] as const;
+
+type MapTypeId = typeof mapTypeOptions[number]["id"];
+
 const GoogleMapView = ({ markers, selectedMarkerName, onMarkerClick }: GoogleMapViewProps) => {
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
@@ -86,6 +96,7 @@ const GoogleMapView = ({ markers, selectedMarkerName, onMarkerClick }: GoogleMap
 
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [hoveredMarker, setHoveredMarker] = useState<string | null>(null);
+  const [mapTypeId, setMapTypeId] = useState<MapTypeId>("roadmap");
 
   const mapOptions = useMemo<google.maps.MapOptions>(
     () => ({
@@ -158,6 +169,7 @@ const GoogleMapView = ({ markers, selectedMarkerName, onMarkerClick }: GoogleMap
         center={GHANA_CENTER}
         zoom={7}
         options={mapOptions}
+        mapTypeId={mapTypeId}
         onLoad={onLoad}
         onUnmount={onUnmount}
       >
@@ -183,10 +195,10 @@ const GoogleMapView = ({ markers, selectedMarkerName, onMarkerClick }: GoogleMap
                   options={{ disableAutoPan: true }}
                 >
                   <div className="p-1 min-w-[140px]">
-                    <p className="text-sm font-semibold text-gray-900">{marker.name}</p>
+                    <p className="text-sm font-semibold text-foreground">{marker.name}</p>
                     <div className="flex items-center gap-1.5 mt-1">
                       <div className={cn("w-2 h-2 rounded-full", statusDotClasses[marker.status])} />
-                      <span className="text-xs text-gray-600 capitalize">
+                      <span className="text-xs text-muted-foreground capitalize">
                         {marker.status} · {marker.region}
                       </span>
                     </div>
@@ -198,9 +210,24 @@ const GoogleMapView = ({ markers, selectedMarkerName, onMarkerClick }: GoogleMap
         })}
       </GoogleMap>
 
-      {/* Map type label */}
-      <div className="absolute top-3 left-3 bg-card/90 border border-border rounded-lg px-2.5 py-1 text-[10px] font-mono text-muted-foreground backdrop-blur-sm z-10">
-        Google Maps · Ghana
+      {/* Map Type Selector */}
+      <div className="absolute top-3 left-3 flex items-center gap-1 bg-card/95 border border-border rounded-lg p-1 backdrop-blur-md shadow-lg z-10">
+        {mapTypeOptions.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setMapTypeId(id)}
+            className={cn(
+              "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium transition-all",
+              mapTypeId === id
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+            )}
+            title={label}
+          >
+            <Icon className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{label}</span>
+          </button>
+        ))}
       </div>
     </div>
   );
