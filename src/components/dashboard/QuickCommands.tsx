@@ -9,12 +9,12 @@ const commands = [
 
 const QuickCommands = () => {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-stretch gap-3 overflow-x-auto pb-1 -mx-1 px-1">
       {commands.map((cmd) => (
         <button
           key={cmd.label}
           className={cn(
-            "flex items-center gap-3 px-5 py-3.5 rounded-xl border border-border bg-card shadow-xs",
+            "flex items-center gap-3 px-4 md:px-5 py-3 md:py-3.5 rounded-xl border border-border bg-card shadow-xs min-w-[180px] md:min-w-0 flex-shrink-0 md:flex-shrink",
             "hover:border-primary/30 hover:shadow-sm transition-all text-sm font-medium text-muted-foreground hover:text-foreground"
           )}
         >

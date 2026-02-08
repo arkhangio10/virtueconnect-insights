@@ -9,7 +9,7 @@ const Index = () => {
   return (
     <div className="flex min-h-screen w-full bg-background">
       <AppSidebar activeView={activeView} onViewChange={setActiveView} />
-      <main className="flex-1 p-6 overflow-auto">
+      <main className="flex-1 p-4 md:p-6 overflow-auto pt-[72px] md:pt-6">
         {activeView === "dashboard" ? <NGODashboard /> : <PatientSafeView />}
       </main>
     </div>
