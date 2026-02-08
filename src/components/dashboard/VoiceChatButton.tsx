@@ -6,7 +6,7 @@ import { useFacilitiesData } from "@/hooks/useFacilitiesData";
 import ReactMarkdown from "react-markdown";
 
 const SONIA_API_BASE =
-  (import.meta.env.VITE_SONIA_API_URL as string | undefined) ?? "http://localhost:3001";
+  (import.meta.env.VITE_SONIA_API_URL as string | undefined)?.trim() ?? "";
 
 type ChatMessage = { role: "user" | "assistant"; text: string };
 
