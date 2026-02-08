@@ -13,17 +13,18 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
   return (
     <aside
       className={cn(
-        "flex flex-col border-r border-border bg-sidebar transition-all duration-300 h-screen sticky top-0",
+        "flex flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 h-screen sticky top-0",
         collapsed ? "w-16" : "w-56"
       )}
+      style={{ backgroundColor: "hsl(var(--sidebar-background))" }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-2.5 px-4 h-14 border-b border-border">
-        <div className="w-7 h-7 rounded-md gradient-primary flex items-center justify-center flex-shrink-0">
+      <div className="flex items-center gap-2.5 px-4 h-14 border-b border-sidebar-border">
+        <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center flex-shrink-0 shadow-sm">
           <span className="text-primary-foreground font-bold text-xs">VC</span>
         </div>
         {!collapsed && (
-          <span className="text-sm font-bold tracking-tight text-foreground truncate">
+          <span className="text-sm font-bold tracking-tight text-sidebar-foreground truncate">
             VirtueConnect
           </span>
         )}
@@ -34,10 +35,10 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
         <button
           onClick={() => onViewChange("dashboard")}
           className={cn(
-            "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+            "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
             activeView === "dashboard"
-              ? "bg-primary/10 text-primary"
-              : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              ? "bg-sidebar-primary/15 text-sidebar-primary"
+              : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
           )}
         >
           <LayoutDashboard className="w-4 h-4 flex-shrink-0" />
@@ -47,10 +48,10 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
         <button
           onClick={() => onViewChange("patientsafe")}
           className={cn(
-            "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+            "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
             activeView === "patientsafe"
-              ? "bg-primary/10 text-primary"
-              : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              ? "bg-sidebar-primary/15 text-sidebar-primary"
+              : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
           )}
         >
           <Shield className="w-4 h-4 flex-shrink-0" />
@@ -61,7 +62,7 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
       {/* Collapse Toggle */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="flex items-center justify-center h-10 border-t border-border text-muted-foreground hover:text-foreground transition-colors"
+        className="flex items-center justify-center h-10 border-t border-sidebar-border text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors"
       >
         {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
       </button>

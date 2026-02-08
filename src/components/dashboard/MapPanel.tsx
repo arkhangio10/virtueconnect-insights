@@ -122,7 +122,7 @@ const MapPanel = () => {
   };
 
   return (
-    <div className="gradient-card rounded-xl border border-border overflow-hidden animate-fade-in">
+    <div className="bg-card rounded-xl border border-border overflow-hidden animate-fade-in shadow-sm">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border-b border-border gap-3">
         <div>
@@ -132,7 +132,7 @@ const MapPanel = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-secondary rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-secondary rounded-lg p-1 border border-border">
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -174,7 +174,7 @@ const MapPanel = () => {
               className="w-full h-full object-cover opacity-80 select-none pointer-events-none"
               draggable={false}
             />
-            <div className="absolute inset-0 bg-background/30" />
+            <div className="absolute inset-0 bg-primary/5" />
 
             {/* Markers */}
             {filteredMarkers.map((marker) => (
