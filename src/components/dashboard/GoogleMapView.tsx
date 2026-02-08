@@ -1,0 +1,207 @@
+import { useState, useCallback, useMemo } from "react";
+import { GoogleMap, useJsApiLoader, MarkerF, InfoWindowF } from "@react-google-maps/api";
+import { cn } from "@/lib/utils";
+
+const GOOGLE_MAPS_API_KEY = "AIzaSyBjIIDtqZBwTXwYEI6o-OzDk6WshdnKT40";
+
+// Ghana center coordinates
+const GHANA_CENTER = { lat: 7.9465, lng: -1.0232 };
+
+const mapStyles: google.maps.MapTypeStyle[] = [
+  { elementType: "geometry", stylers: [{ color: "#1a2332" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#1a2332" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#6b8cae" }] },
+  { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#3a5a7c" }] },
+  { featureType: "administrative.province", elementType: "geometry.stroke", stylers: [{ color: "#2a4a6c" }, { weight: 0.8 }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#0e1a2a" }] },
+  { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#3a5a7c" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#243447" }] },
+  { featureType: "road", elementType: "labels", stylers: [{ visibility: "off" }] },
+  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#2c4a62" }] },
+  { featureType: "poi", stylers: [{ visibility: "off" }] },
+  { featureType: "transit", stylers: [{ visibility: "off" }] },
+  { featureType: "landscape.natural", elementType: "geometry", stylers: [{ color: "#1e3040" }] },
+  { featureType: "landscape.man_made", elementType: "geometry", stylers: [{ color: "#1a2838" }] },
+];
+
+export interface MapMarker {
+  lat: number;
+  lng: number;
+  status: "validated" | "uncertain" | "anomaly";
+  name: string;
+  category: string;
+  region: string;
+  beds: number;
+  lastAudit: string;
+}
+
+interface GoogleMapViewProps {
+  markers: MapMarker[];
+  selectedMarkerName?: string | null;
+  onMarkerClick?: (marker: MapMarker) => void;
+}
+
+const statusPinColors: Record<string, string> = {
+  validated: "#22c55e",
+  uncertain: "#eab308",
+  anomaly: "#ef4444",
+};
+
+const statusTextClasses: Record<string, string> = {
+  validated: "text-success",
+  uncertain: "text-warning",
+  anomaly: "text-danger",
+};
+
+const statusDotClasses: Record<string, string> = {
+  validated: "bg-success",
+  uncertain: "bg-warning",
+  anomaly: "bg-danger",
+};
+
+function createMarkerIcon(status: string, isSelected: boolean): google.maps.Symbol {
+  const color = statusPinColors[status] || "#999";
+  const scale = isSelected ? 12 : 8;
+  return {
+    path: google.maps.SymbolPath.CIRCLE,
+    fillColor: color,
+    fillOpacity: isSelected ? 1 : 0.85,
+    strokeColor: "#ffffff",
+    strokeWeight: isSelected ? 2.5 : 1.5,
+    scale,
+  };
+}
+
+const containerStyle = {
+  width: "100%",
+  height: "100%",
+};
+
+const GoogleMapView = ({ markers, selectedMarkerName, onMarkerClick }: GoogleMapViewProps) => {
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+  });
+
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [hoveredMarker, setHoveredMarker] = useState<string | null>(null);
+
+  const mapOptions = useMemo<google.maps.MapOptions>(
+    () => ({
+      styles: mapStyles,
+      disableDefaultUI: true,
+      zoomControl: true,
+      zoomControlOptions: {
+        position: isLoaded ? google.maps.ControlPosition.RIGHT_TOP : undefined,
+      },
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+      minZoom: 6,
+      maxZoom: 15,
+      restriction: {
+        latLngBounds: {
+          north: 12.5,
+          south: 3.5,
+          west: -4.5,
+          east: 2.5,
+        },
+        strictBounds: false,
+      },
+    }),
+    [isLoaded]
+  );
+
+  const onLoad = useCallback((map: google.maps.Map) => {
+    setMap(map);
+  }, []);
+
+  const onUnmount = useCallback(() => {
+    setMap(null);
+  }, []);
+
+  const handleMarkerClick = useCallback(
+    (marker: MapMarker) => {
+      onMarkerClick?.(marker);
+      if (map) {
+        map.panTo({ lat: marker.lat, lng: marker.lng });
+        map.setZoom(Math.max(map.getZoom() || 8, 10));
+      }
+    },
+    [onMarkerClick, map]
+  );
+
+  if (loadError) {
+    return (
+      <div className="w-full aspect-[4/3] sm:aspect-[16/10] bg-secondary flex items-center justify-center">
+        <p className="text-sm text-destructive">Error loading Google Maps</p>
+      </div>
+    );
+  }
+
+  if (!isLoaded) {
+    return (
+      <div className="w-full aspect-[4/3] sm:aspect-[16/10] bg-[#1a2332] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-muted-foreground">Loading map...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full aspect-[4/3] sm:aspect-[16/10] relative">
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={GHANA_CENTER}
+        zoom={7}
+        options={mapOptions}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
+      >
+        {markers.map((marker) => {
+          const isSelected = selectedMarkerName === marker.name;
+          const isHovered = hoveredMarker === marker.name;
+
+          return (
+            <MarkerF
+              key={marker.name}
+              position={{ lat: marker.lat, lng: marker.lng }}
+              icon={createMarkerIcon(marker.status, isSelected)}
+              onClick={() => handleMarkerClick(marker)}
+              onMouseOver={() => setHoveredMarker(marker.name)}
+              onMouseOut={() => setHoveredMarker(null)}
+              zIndex={isSelected ? 100 : isHovered ? 50 : 1}
+              animation={isSelected ? google.maps.Animation.BOUNCE : undefined}
+            >
+              {isHovered && !isSelected && (
+                <InfoWindowF
+                  position={{ lat: marker.lat, lng: marker.lng }}
+                  onCloseClick={() => setHoveredMarker(null)}
+                  options={{ disableAutoPan: true }}
+                >
+                  <div className="p-1 min-w-[140px]">
+                    <p className="text-sm font-semibold text-gray-900">{marker.name}</p>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <div className={cn("w-2 h-2 rounded-full", statusDotClasses[marker.status])} />
+                      <span className="text-xs text-gray-600 capitalize">
+                        {marker.status} · {marker.region}
+                      </span>
+                    </div>
+                  </div>
+                </InfoWindowF>
+              )}
+            </MarkerF>
+          );
+        })}
+      </GoogleMap>
+
+      {/* Map type label */}
+      <div className="absolute top-3 left-3 bg-card/90 border border-border rounded-lg px-2.5 py-1 text-[10px] font-mono text-muted-foreground backdrop-blur-sm z-10">
+        Google Maps · Ghana
+      </div>
+    </div>
+  );
+};
+
+export default GoogleMapView;
