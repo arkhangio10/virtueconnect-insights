@@ -182,8 +182,7 @@ ${facilityTable.join("\n")}
   }
 }
 
-// Initial load
-loadFacilities();
+// Facilities loaded before server starts (see bottom of file)
 
 // ── System prompt for Sonia (dynamic to pick up latest facilitySummary) ─────
 function getSoniaSystemPrompt(): string {
@@ -641,11 +640,15 @@ if (fs.existsSync(DIST_DIR)) {
   });
 }
 
-// ── Start ───────────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`🩺 Sonia API running on http://localhost:${PORT}`);
-  console.log(`   Gemini: ${genAI ? "✅ Configured" : "❌ No API key"}`);
-  console.log(`   ElevenLabs: ${ELEVENLABS_API_KEY ? "✅ Configured" : "❌ No API key"}`);
-  console.log(`   Facilities: ${facilitySummary.includes("Total") ? "✅ Loaded" : "❌ Not found"}`);
-  console.log(`   Conversations: ${CONVERSATIONS_DIR}`);
-});
+// ── Start (wait for facilities before accepting requests) ────────────────────
+async function start() {
+  await loadFacilities();
+  app.listen(PORT, () => {
+    console.log(`🩺 Sonia API running on http://localhost:${PORT}`);
+    console.log(`   Gemini: ${genAI ? "✅ Configured" : "❌ No API key"}`);
+    console.log(`   ElevenLabs: ${ELEVENLABS_API_KEY ? "✅ Configured" : "❌ No API key"}`);
+    console.log(`   Facilities: ${facilitiesForContext.length} loaded`);
+    console.log(`   Conversations: ${CONVERSATIONS_DIR}`);
+  });
+}
+start();

@@ -15,9 +15,10 @@ import {
   parseFacilities,
 } from "@/lib/facility-data";
 
-// In production, facilities_full.json is served statically from public/
-// In dev, VITE_FACILITIES_URL can override (e.g. /@fs/... for local file)
-const DEFAULT_FACILITIES_URL = "/facilities_full.json";
+// In production, API serves facilities; in dev, VITE_FACILITIES_URL can override
+const SONIA_API_BASE =
+  (import.meta.env.VITE_SONIA_API_URL as string | undefined)?.trim() ?? "";
+const DEFAULT_FACILITIES_URL = `${SONIA_API_BASE}/api/facilities`;
 
 export type FacilitiesDataState = {
   facilities: Facility[];
