@@ -104,24 +104,40 @@ async function loadFacilities() {
 
       console.log(`✅ Loaded ${result.length} facilities from Databricks!`);
 
-      // Map Databricks rows to internal format
+      // Map Databricks flat rows to the nested format the frontend expects
+      // (same structure as facilities_full.json from the pipeline)
+      const capField = (val: any) => ({
+        value: val === true || val === 1 || val === "true" ? true : val === false || val === 0 || val === "false" ? false : null,
+        state: val === true || val === 1 || val === "true" ? "ASSERTED" : "MISSING",
+        confidence: 1.0,
+        evidence: [],
+      });
+
       facilitiesForContext = result.map((row: any) => ({
-        ...row,
-        // Helper specifically for context building below
+        facility_id: row.facility_id ?? "",
+        name: row.name ?? "Unknown",
+        region: row.region ?? null,
+        district: row.district ?? null,
+        lat: row.lat ?? null,
+        lon: row.lon ?? null,
+        facility_type: row.facility_type ?? null,
         maternity: {
-          c_section: { value: row.c_section_value },
-          blood_bank: { value: row.blood_bank_value },
-          operating_room: { value: row.operating_room_value },
-          anesthesia: { value: row.anesthesia_value },
+          c_section: capField(row.c_section_value),
+          blood_bank: capField(row.blood_bank_value),
+          operating_room: capField(row.operating_room_value),
+          anesthesia: capField(row.anesthesia_value),
         },
         trauma: {
-          emergency_24_7: { value: row.emergency_24_7_value },
-          ambulance: { value: row.ambulance_value },
+          emergency_24_7: capField(row.emergency_24_7_value),
+          ambulance: capField(row.ambulance_value),
         },
         infrastructure: {
-          pharmacy: { value: row.pharmacy_value },
-          lab_basic: { value: row.lab_basic_value },
-        }
+          pharmacy: capField(row.pharmacy_value),
+          lab_basic: capField(row.lab_basic_value),
+        },
+        anomalies: [],
+        raw_specialties: [],
+        raw_procedures: [],
       }));
 
     } catch (err) {
@@ -611,19 +627,22 @@ app.get("/health", (req, res) => {
 });
 
 // ── Serve Facilities JSON (for frontend) ─────────────────────────────────────
+// Always serve from memory (loaded before server starts).
+// Falls back to static JSON file only if memory is empty.
 app.get("/api/facilities", (req, res) => {
+  if (facilitiesForContext.length > 0) {
+    return res.json(facilitiesForContext);
+  }
+  // Fallback to file
   const pathToSend = fs.existsSync(FACILITIES_PATH)
     ? FACILITIES_PATH
     : fs.existsSync(FACILITIES_FALLBACK)
       ? FACILITIES_FALLBACK
       : null;
   if (pathToSend) {
-    res.sendFile(pathToSend);
-  } else if (facilitiesForContext.length > 0) {
-    res.json(facilitiesForContext);
-  } else {
-    res.status(404).json({ error: "Facilities data not found" });
+    return res.sendFile(pathToSend);
   }
+  res.status(503).json({ error: "Facilities still loading, try again in a moment" });
 });
 
 // ── Serve Frontend (Production) ─────────────────────────────────────────────
