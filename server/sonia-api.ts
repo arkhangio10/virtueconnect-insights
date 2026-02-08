@@ -27,10 +27,11 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY ?? process.env.GOOGLE_API_KEY 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY ?? "";
 // Sonia voice — "Rachel" is a warm professional female voice
 const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID ?? "21m00Tcm4TlvDq8ikWAM";
-const FACILITIES_PATH = path.resolve(
-  __dirname,
-  "../../data/output/facilities_full.json"
-);
+// Local dev: data/output (from repo root). Production: bundled in frontend/public
+const FACILITIES_PATH =
+  process.env.FACILITIES_JSON_PATH ||
+  path.resolve(__dirname, "../../data/output/facilities_full.json");
+const FACILITIES_FALLBACK = path.resolve(__dirname, "../public/facilities_full.json");
 const CONVERSATIONS_DIR = path.resolve(__dirname, "../../data/conversations");
 const UPLOADS_DIR = path.resolve(__dirname, "../../data/uploads");
 
@@ -128,11 +129,16 @@ async function loadFacilities() {
     }
   }
 
-  // Fallback to local JSON if empty
-  if (facilitiesForContext.length === 0 && fs.existsSync(FACILITIES_PATH)) {
+  // Fallback to local or bundled JSON if empty
+  const facilitiesJsonPath = fs.existsSync(FACILITIES_PATH)
+    ? FACILITIES_PATH
+    : fs.existsSync(FACILITIES_FALLBACK)
+      ? FACILITIES_FALLBACK
+      : null;
+  if (facilitiesForContext.length === 0 && facilitiesJsonPath) {
     try {
-      console.log("📂 Loading facilities from local JSON...");
-      const raw = JSON.parse(fs.readFileSync(FACILITIES_PATH, "utf-8"));
+      console.log("📂 Loading facilities from", facilitiesJsonPath);
+      const raw = JSON.parse(fs.readFileSync(facilitiesJsonPath, "utf-8"));
       facilitiesForContext = Array.isArray(raw) ? raw : Object.values(raw);
     } catch (err) {
       console.error("❌ Failed to load local JSON:", err);
@@ -605,8 +611,13 @@ app.get("/health", (req, res) => {
 
 // ── Serve Facilities JSON (for frontend) ─────────────────────────────────────
 app.get("/api/facilities", (req, res) => {
-  if (fs.existsSync(FACILITIES_PATH)) {
-    res.sendFile(FACILITIES_PATH);
+  const pathToSend = fs.existsSync(FACILITIES_PATH)
+    ? FACILITIES_PATH
+    : fs.existsSync(FACILITIES_FALLBACK)
+      ? FACILITIES_FALLBACK
+      : null;
+  if (pathToSend) {
+    res.sendFile(pathToSend);
   } else if (facilitiesForContext.length > 0) {
     res.json(facilitiesForContext);
   } else {
