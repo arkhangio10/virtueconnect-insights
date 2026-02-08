@@ -203,7 +203,7 @@ const PatientSafeView = () => {
         ].map((action) => (
           <button
             key={action.label}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-secondary/30 hover:bg-secondary/60 hover:border-primary/30 transition-all text-xs text-muted-foreground hover:text-foreground whitespace-nowrap"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card shadow-xs hover:border-primary/30 hover:shadow-sm transition-all text-xs text-muted-foreground hover:text-foreground whitespace-nowrap"
           >
             <action.icon className="w-3.5 h-3.5" />
             {action.label}
@@ -213,7 +213,7 @@ const PatientSafeView = () => {
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
         {/* Chat Interface */}
-        <div className="gradient-card rounded-xl border border-border flex flex-col h-[520px] animate-fade-in">
+        <div className="bg-card rounded-xl border border-border flex flex-col h-[520px] animate-fade-in shadow-sm">
           <div className="flex items-center justify-between p-4 border-b border-border">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
@@ -246,8 +246,8 @@ const PatientSafeView = () => {
                   className={cn(
                     "rounded-xl px-4 py-3",
                     msg.role === "user"
-                      ? "bg-primary/15 border border-primary/20 text-foreground"
-                      : "bg-secondary/80 border border-border text-secondary-foreground"
+                      ? "bg-primary/10 border border-primary/20 text-foreground"
+                      : "bg-secondary border border-border text-foreground"
                   )}
                 >
                   {msg.content}
@@ -387,8 +387,8 @@ const PatientSafeView = () => {
               <div
                 key={facility.name}
                 className={cn(
-                  "gradient-card rounded-xl border border-border p-4 transition-all duration-200 hover:border-primary/30",
-                  i === 0 && "card-glow border-primary/15"
+                  "bg-card rounded-xl border border-border p-4 transition-all duration-200 hover:border-primary/30 shadow-sm hover:shadow-md",
+                  i === 0 && "ring-1 ring-primary/15 shadow-md"
                 )}
               >
                 <div className="flex items-start justify-between mb-3">
@@ -439,14 +439,14 @@ const PatientSafeView = () => {
                 </div>
 
                 {/* Evidence */}
-                <div className="bg-secondary/60 rounded-lg p-3 border border-border/50">
+                <div className="bg-accent rounded-lg p-3 border border-border">
                   <div className="flex items-center gap-1.5 mb-1">
                     <Clock className="w-3 h-3 text-muted-foreground" />
                     <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-semibold">
                       Verified Evidence
                     </span>
                   </div>
-                  <p className="text-[11px] text-secondary-foreground leading-relaxed">
+                  <p className="text-[11px] text-foreground/80 leading-relaxed">
                     {facility.evidence}
                   </p>
                 </div>
