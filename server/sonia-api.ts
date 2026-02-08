@@ -185,8 +185,9 @@ ${facilityTable.join("\n")}
 // Initial load
 loadFacilities();
 
-// ── System prompt for Sonia ────────────────────────────────────────────────
-const SONIA_SYSTEM_PROMPT = `
+// ── System prompt for Sonia (dynamic to pick up latest facilitySummary) ─────
+function getSoniaSystemPrompt(): string {
+  return `
 You are Sonia, a clinical assistant AI for the CareBridge PatientSafe system in Ghana.
 Your role is to help healthcare workers find the safest facility for their patients.
 
@@ -250,6 +251,7 @@ CRITICAL RULES FOR FACILITY RECOMMENDATIONS:
 - If very few facilities match, say so honestly and recommend the closest alternatives.
 - ALWAYS include at least the facility name, region, and the specific capabilities that match the patient's need.
 `;
+}
 
 // ── Conversation store ─────────────────────────────────────────────────────
 interface Message {
@@ -315,7 +317,7 @@ async function chatWithGemini(
 
     const chat = model.startChat({
       history: [
-        { role: "user", parts: [{ text: "System instructions: " + SONIA_SYSTEM_PROMPT }] },
+        { role: "user", parts: [{ text: "System instructions: " + getSoniaSystemPrompt() }] },
         {
           role: "model",
           parts: [
