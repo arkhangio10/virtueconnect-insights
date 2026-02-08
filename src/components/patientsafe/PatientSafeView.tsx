@@ -20,6 +20,7 @@ import {
   Mic,
   MicOff,
   Upload,
+  Camera,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -110,6 +111,7 @@ const PatientSafeView = () => {
   const [isListening, setIsListening] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, type: "image" | "file") => {
     const files = e.target.files;
@@ -342,6 +344,7 @@ const PatientSafeView = () => {
           {/* Input Bar */}
           <div className="p-3 md:p-5 border-t border-border">
             <div className="flex items-center gap-1.5 md:gap-2.5">
+              {/* Attach files */}
               <button
                 onClick={() => fileInputRef.current?.click()}
                 className="w-9 h-9 md:w-11 md:h-11 rounded-xl border border-border bg-secondary/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all flex-shrink-0"
@@ -351,6 +354,17 @@ const PatientSafeView = () => {
               </button>
               <input ref={fileInputRef} type="file" className="hidden" accept=".pdf,.doc,.docx,.txt,.csv,.dicom" multiple onChange={(e) => handleFileSelect(e, "file")} />
 
+              {/* Camera — opens device camera on mobile */}
+              <button
+                onClick={() => cameraInputRef.current?.click()}
+                className="w-9 h-9 md:w-11 md:h-11 rounded-xl border border-border bg-secondary/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all flex-shrink-0"
+                title="Take photo"
+              >
+                <Camera className="w-4 h-4 md:w-5 md:h-5" />
+              </button>
+              <input ref={cameraInputRef} type="file" className="hidden" accept="image/*" capture="environment" onChange={(e) => handleFileSelect(e, "image")} />
+
+              {/* Attach images — gallery picker, visible on larger screens */}
               <button
                 onClick={() => imageInputRef.current?.click()}
                 className="hidden sm:flex w-9 h-9 md:w-11 md:h-11 rounded-xl border border-border bg-secondary/50 items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all flex-shrink-0"
@@ -360,6 +374,7 @@ const PatientSafeView = () => {
               </button>
               <input ref={imageInputRef} type="file" className="hidden" accept="image/*" multiple onChange={(e) => handleFileSelect(e, "image")} />
 
+              {/* Text input */}
               <input
                 type="text"
                 value={input}
@@ -369,6 +384,7 @@ const PatientSafeView = () => {
                 className="flex-1 min-w-0 bg-secondary border border-border rounded-xl px-3 md:px-4 py-2.5 md:py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
 
+              {/* Voice */}
               <button
                 onClick={toggleListening}
                 className={cn(
@@ -382,6 +398,7 @@ const PatientSafeView = () => {
                 {isListening ? <MicOff className="w-4 h-4 md:w-5 md:h-5" /> : <Mic className="w-4 h-4 md:w-5 md:h-5" />}
               </button>
 
+              {/* Send */}
               <button
                 onClick={handleSend}
                 disabled={!input.trim() && attachments.length === 0}
@@ -396,7 +413,7 @@ const PatientSafeView = () => {
               </button>
             </div>
             <p className="text-[11px] md:text-xs text-muted-foreground mt-2 md:mt-3 px-1">
-              Type, use voice, or attach records for AI-assisted triage
+              Type, use voice, take a photo, or attach records for AI-assisted triage
             </p>
           </div>
         </div>
