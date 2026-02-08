@@ -109,6 +109,7 @@ const PatientSafeView = () => {
   const [showResults, setShowResults] = useState(true);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [isListening, setIsListening] = useState(false);
+  const [showAttachMenu, setShowAttachMenu] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -343,36 +344,53 @@ const PatientSafeView = () => {
 
           {/* Input Bar */}
           <div className="p-3 md:p-5 border-t border-border">
-            <div className="flex items-center gap-1.5 md:gap-2.5">
-              {/* Attach files */}
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="w-9 h-9 md:w-11 md:h-11 rounded-xl border border-border bg-secondary/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all flex-shrink-0"
-                title="Attach clinical document"
-              >
-                <Paperclip className="w-4 h-4 md:w-5 md:h-5" />
-              </button>
-              <input ref={fileInputRef} type="file" className="hidden" accept=".pdf,.doc,.docx,.txt,.csv,.dicom" multiple onChange={(e) => handleFileSelect(e, "file")} />
+            {/* Attachment options row */}
+            {showAttachMenu && (
+              <div className="flex items-center gap-2 mb-2.5 animate-fade-in">
+                <button
+                  onClick={() => { fileInputRef.current?.click(); setShowAttachMenu(false); }}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-secondary/50 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all"
+                >
+                  <Paperclip className="w-4 h-4" />
+                  <span className="text-xs font-medium">Document</span>
+                </button>
+                <button
+                  onClick={() => { cameraInputRef.current?.click(); setShowAttachMenu(false); }}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-secondary/50 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all"
+                >
+                  <Camera className="w-4 h-4" />
+                  <span className="text-xs font-medium">Camera</span>
+                </button>
+                <button
+                  onClick={() => { imageInputRef.current?.click(); setShowAttachMenu(false); }}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-secondary/50 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all"
+                >
+                  <Image className="w-4 h-4" />
+                  <span className="text-xs font-medium">Gallery</span>
+                </button>
+              </div>
+            )}
 
-              {/* Camera — opens device camera on mobile */}
-              <button
-                onClick={() => cameraInputRef.current?.click()}
-                className="w-9 h-9 md:w-11 md:h-11 rounded-xl border border-border bg-secondary/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all flex-shrink-0"
-                title="Take photo"
-              >
-                <Camera className="w-4 h-4 md:w-5 md:h-5" />
-              </button>
-              <input ref={cameraInputRef} type="file" className="hidden" accept="image/*" capture="environment" onChange={(e) => handleFileSelect(e, "image")} />
+            {/* Hidden file inputs */}
+            <input ref={fileInputRef} type="file" className="hidden" accept=".pdf,.doc,.docx,.txt,.csv,.dicom" multiple onChange={(e) => handleFileSelect(e, "file")} />
+            <input ref={cameraInputRef} type="file" className="hidden" accept="image/*" capture="environment" onChange={(e) => handleFileSelect(e, "image")} />
+            <input ref={imageInputRef} type="file" className="hidden" accept="image/*" multiple onChange={(e) => handleFileSelect(e, "image")} />
 
-              {/* Attach images — gallery picker, visible on larger screens */}
+            {/* Main input row */}
+            <div className="flex items-center gap-1.5 md:gap-2">
+              {/* Attach toggle */}
               <button
-                onClick={() => imageInputRef.current?.click()}
-                className="hidden sm:flex w-9 h-9 md:w-11 md:h-11 rounded-xl border border-border bg-secondary/50 items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all flex-shrink-0"
-                title="Attach medical imaging"
+                onClick={() => setShowAttachMenu(!showAttachMenu)}
+                className={cn(
+                  "w-9 h-9 md:w-11 md:h-11 rounded-xl flex items-center justify-center transition-all flex-shrink-0",
+                  showAttachMenu
+                    ? "bg-primary/10 border border-primary/30 text-primary"
+                    : "border border-border bg-secondary/50 text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5"
+                )}
+                title="Attach files"
               >
-                <Image className="w-4 h-4 md:w-5 md:h-5" />
+                {showAttachMenu ? <X className="w-4 h-4 md:w-5 md:h-5" /> : <Paperclip className="w-4 h-4 md:w-5 md:h-5" />}
               </button>
-              <input ref={imageInputRef} type="file" className="hidden" accept="image/*" multiple onChange={(e) => handleFileSelect(e, "image")} />
 
               {/* Text input */}
               <input
