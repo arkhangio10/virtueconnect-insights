@@ -1,8 +1,10 @@
 import { useRef, useMemo, useState, useCallback } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, Stars, Html } from "@react-three/drei";
 import * as THREE from "three";
 import { cn } from "@/lib/utils";
+import earthTexture from "@/assets/earth-blue-marble.jpg";
+import earthBump from "@/assets/earth-topology.png";
 
 interface MarkerData {
   lat: number;
@@ -51,70 +53,28 @@ function createGhanaOutline(radius: number): THREE.Vector3[] {
     [11.0, -1.5], [10.5, -2.0], [10.0, -2.5], [9.5, -2.8],
     [8.5, -3.0], [7.5, -3.0], [6.5, -3.0], [5.5, -3.2], [5.0, -3.2],
   ];
-  return ghanaCoords.map(([lat, lng]) => latLngToVector3(lat, lng, radius + 0.01));
+  return ghanaCoords.map(([lat, lng]) => latLngToVector3(lat, lng, radius + 0.015));
 }
 
-// Grid lines for the globe
-function GlobeGrid({ radius }: { radius: number }) {
-  const gridLines = useMemo(() => {
-    const lines: THREE.Vector3[][] = [];
-
-    // Latitude lines every 20°
-    for (let lat = -80; lat <= 80; lat += 20) {
-      const points: THREE.Vector3[] = [];
-      for (let lng = -180; lng <= 180; lng += 5) {
-        points.push(latLngToVector3(lat, lng, radius + 0.002));
-      }
-      lines.push(points);
-    }
-
-    // Longitude lines every 30°
-    for (let lng = -180; lng < 180; lng += 30) {
-      const points: THREE.Vector3[] = [];
-      for (let lat = -90; lat <= 90; lat += 5) {
-        points.push(latLngToVector3(lat, lng, radius + 0.002));
-      }
-      lines.push(points);
-    }
-
-    return lines;
-  }, [radius]);
-
-  return (
-    <>
-      {gridLines.map((points, i) => (
-        <line key={i}>
-          <bufferGeometry>
-            <bufferAttribute
-              attach="attributes-position"
-              count={points.length}
-              array={new Float32Array(points.flatMap((p) => [p.x, p.y, p.z]))}
-              itemSize={3}
-            />
-          </bufferGeometry>
-          <lineBasicMaterial color="#3b82f6" opacity={0.08} transparent />
-        </line>
-      ))}
-    </>
-  );
-}
-
-// Ghana highlighted region
+// Ghana highlighted region outline
 function GhanaHighlight({ radius }: { radius: number }) {
   const outlinePoints = useMemo(() => createGhanaOutline(radius), [radius]);
 
   return (
-    <line>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={outlinePoints.length}
-          array={new Float32Array(outlinePoints.flatMap((p) => [p.x, p.y, p.z]))}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <lineBasicMaterial color="#38bdf8" opacity={0.7} transparent linewidth={2} />
-    </line>
+    <group>
+      {/* Bright outline */}
+      <line>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={outlinePoints.length}
+            array={new Float32Array(outlinePoints.flatMap((p) => [p.x, p.y, p.z]))}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        <lineBasicMaterial color="#38bdf8" opacity={0.85} transparent linewidth={2} />
+      </line>
+    </group>
   );
 }
 
@@ -133,7 +93,7 @@ function GlobeMarker({
   const meshRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
   const position = useMemo(
-    () => latLngToVector3(marker.lat, marker.lng, radius + 0.02),
+    () => latLngToVector3(marker.lat, marker.lng, radius + 0.025),
     [marker.lat, marker.lng, radius]
   );
   const color = statusColorHex[marker.status];
@@ -174,13 +134,21 @@ function GlobeMarker({
           document.body.style.cursor = "auto";
         }}
       >
-        <sphereGeometry args={[0.025, 16, 16]} />
+        <sphereGeometry args={[0.03, 16, 16]} />
         <meshStandardMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={hovered || isSelected ? 1.5 : 0.6}
+          emissiveIntensity={hovered || isSelected ? 2 : 0.8}
         />
       </mesh>
+
+      {/* Vertical beam for selected */}
+      {isSelected && (
+        <mesh position={[0, 0.06, 0]}>
+          <cylinderGeometry args={[0.003, 0.003, 0.12, 8]} />
+          <meshBasicMaterial color={color} opacity={0.6} transparent />
+        </mesh>
+      )}
 
       {/* Tooltip on hover */}
       {hovered && !isSelected && (
@@ -193,6 +161,69 @@ function GlobeMarker({
           </div>
         </Html>
       )}
+    </group>
+  );
+}
+
+// Atmosphere shader for realistic glow
+function Atmosphere({ radius }: { radius: number }) {
+  return (
+    <group>
+      {/* Inner atmosphere glow */}
+      <mesh>
+        <sphereGeometry args={[radius * 1.015, 64, 64]} />
+        <meshBasicMaterial
+          color="#4da6ff"
+          opacity={0.06}
+          transparent
+          side={THREE.FrontSide}
+        />
+      </mesh>
+      {/* Outer atmosphere halo */}
+      <mesh>
+        <sphereGeometry args={[radius * 1.08, 64, 64]} />
+        <meshBasicMaterial
+          color="#1a8cff"
+          opacity={0.03}
+          transparent
+          side={THREE.BackSide}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+// Textured Earth Globe
+function EarthSphere({ radius }: { radius: number }) {
+  const [colorMap, bumpMap] = useLoader(THREE.TextureLoader, [earthTexture, earthBump]);
+
+  return (
+    <mesh>
+      <sphereGeometry args={[radius, 64, 64]} />
+      <meshPhongMaterial
+        map={colorMap}
+        bumpMap={bumpMap}
+        bumpScale={0.04}
+        shininess={8}
+        specular={new THREE.Color("#1a3a5c")}
+      />
+    </mesh>
+  );
+}
+
+// Africa spotlight - point light focused on Ghana/West Africa
+function AfricaSpotlight({ radius }: { radius: number }) {
+  const ghanaCenter = useMemo(() => latLngToVector3(7.5, -1.0, radius + 1.5), [radius]);
+  
+  return (
+    <group>
+      <pointLight
+        position={ghanaCenter}
+        intensity={0.6}
+        distance={3}
+        color="#38bdf8"
+        decay={2}
+      />
     </group>
   );
 }
@@ -212,7 +243,7 @@ function RotatingGlobe({
 
   useFrame((_, delta) => {
     if (groupRef.current && !isDragging) {
-      groupRef.current.rotation.y += delta * 0.08;
+      groupRef.current.rotation.y += delta * 0.06;
     }
   });
 
@@ -220,37 +251,15 @@ function RotatingGlobe({
 
   return (
     <>
-      <ambientLight intensity={0.3} />
-      <directionalLight position={[5, 3, 5]} intensity={0.8} color="#e0f2fe" />
-      <directionalLight position={[-3, -2, -3]} intensity={0.2} color="#1e3a5f" />
-      <pointLight position={[0, 0, 5]} intensity={0.3} color="#38bdf8" />
+      <ambientLight intensity={0.25} />
+      <directionalLight position={[5, 3, 5]} intensity={1.2} color="#ffffff" />
+      <directionalLight position={[-3, -1, -4]} intensity={0.15} color="#0a2a4a" />
+      <pointLight position={[3, 2, 4]} intensity={0.4} color="#e0f2fe" />
 
       <group ref={groupRef}>
-        {/* Ocean sphere */}
-        <mesh>
-          <sphereGeometry args={[RADIUS, 64, 64]} />
-          <meshPhongMaterial
-            color="#0c1929"
-            emissive="#0a1628"
-            emissiveIntensity={0.3}
-            shininess={20}
-            specular="#1e3a5f"
-          />
-        </mesh>
-
-        {/* Atmosphere glow */}
-        <mesh>
-          <sphereGeometry args={[RADIUS * 1.02, 64, 64]} />
-          <meshBasicMaterial
-            color="#38bdf8"
-            opacity={0.04}
-            transparent
-            side={THREE.BackSide}
-          />
-        </mesh>
-
-        {/* Grid */}
-        <GlobeGrid radius={RADIUS} />
+        <EarthSphere radius={RADIUS} />
+        <Atmosphere radius={RADIUS} />
+        <AfricaSpotlight radius={RADIUS} />
 
         {/* Ghana outline */}
         <GhanaHighlight radius={RADIUS} />
@@ -267,12 +276,12 @@ function RotatingGlobe({
         ))}
       </group>
 
-      <Stars radius={50} depth={50} count={1500} factor={3} fade speed={1} />
+      <Stars radius={80} depth={60} count={2000} factor={3} fade speed={0.8} />
 
       <OrbitControls
         enablePan={false}
         enableZoom={true}
-        minDistance={3.5}
+        minDistance={3.2}
         maxDistance={8}
         autoRotate={false}
         onStart={() => setIsDragging(true)}
@@ -291,14 +300,14 @@ const GlobeVisualization = ({ markers, onMarkerClick, selectedMarkerName }: Glob
   );
 
   return (
-    <div className="w-full aspect-[4/3] sm:aspect-[16/10] bg-[#060d18] rounded-none overflow-hidden">
+    <div className="w-full aspect-[4/3] sm:aspect-[16/10] bg-[#040a14] rounded-none overflow-hidden">
       <Canvas
         camera={{ position: [0, 1, 5], fov: 45 }}
         gl={{ antialias: true, alpha: false }}
         dpr={[1, 2]}
       >
-        <color attach="background" args={["#060d18"]} />
-        <fog attach="fog" args={["#060d18", 8, 15]} />
+        <color attach="background" args={["#040a14"]} />
+        <fog attach="fog" args={["#040a14", 8, 16]} />
         <RotatingGlobe
           markers={markers}
           onMarkerClick={handleMarkerClick}
