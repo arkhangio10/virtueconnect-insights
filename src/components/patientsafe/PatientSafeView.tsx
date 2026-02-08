@@ -68,7 +68,7 @@ const PatientSafeView = () => {
   const [mapClickMode, setMapClickMode] = useState(false);
   const [locatingGPS, setLocatingGPS] = useState(false);
 
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -78,9 +78,11 @@ const PatientSafeView = () => {
     sonia.startConversation();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Auto-scroll chat
+  // Auto-scroll chat (using scrollTop to avoid page jumping)
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   }, [sonia.messages]);
 
   // Auto-speak new assistant messages
@@ -487,7 +489,7 @@ const PatientSafeView = () => {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-5 space-y-4">
+          <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-5 space-y-4">
             {sonia.messages.map((msg, i) => renderMessage(msg, i))}
             {sonia.loading && (
               <div className="flex items-center gap-2">
@@ -499,7 +501,6 @@ const PatientSafeView = () => {
                 </div>
               </div>
             )}
-            <div ref={chatEndRef} />
           </div>
 
           {/* Pending file previews */}
