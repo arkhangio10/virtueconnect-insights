@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Locate, X, Search } from "lucide-react";
-import GlobeVisualization from "./GlobeVisualization";
+import { X, Search } from "lucide-react";
+import GoogleMapView from "./GoogleMapView";
 
 const categories = ["Maternity", "Trauma", "Infrastructure"] as const;
 type Category = (typeof categories)[number];
@@ -20,8 +20,6 @@ const specialties = [
 interface FacilityMarker {
   lat: number;
   lng: number;
-  x: number;
-  y: number;
   status: "validated" | "uncertain" | "anomaly";
   name: string;
   category: Category;
@@ -31,20 +29,20 @@ interface FacilityMarker {
 }
 
 const markers: FacilityMarker[] = [
-  { lat: 9.40, lng: -0.84, x: 45, y: 25, status: "validated", name: "Tamale Teaching Hospital", category: "Maternity", region: "Northern", beds: 420, lastAudit: "2026-01-15" },
-  { lat: 9.44, lng: -0.01, x: 48, y: 30, status: "anomaly", name: "Yendi Municipal Hospital", category: "Trauma", region: "Northern", beds: 85, lastAudit: "2025-11-02" },
-  { lat: 6.69, lng: -1.62, x: 50, y: 55, status: "validated", name: "Kumasi South Hospital", category: "Maternity", region: "Ashanti", beds: 310, lastAudit: "2026-02-01" },
-  { lat: 6.73, lng: -1.45, x: 55, y: 50, status: "uncertain", name: "Ejisu Clinic", category: "Infrastructure", region: "Ashanti", beds: 45, lastAudit: "2025-09-18" },
-  { lat: 5.54, lng: -0.23, x: 52, y: 75, status: "validated", name: "Korle Bu Teaching Hospital", category: "Maternity", region: "Greater Accra", beds: 1600, lastAudit: "2026-01-28" },
-  { lat: 5.56, lng: -0.19, x: 48, y: 72, status: "validated", name: "Ridge Hospital", category: "Trauma", region: "Greater Accra", beds: 450, lastAudit: "2026-01-20" },
-  { lat: 6.60, lng: 0.47, x: 60, y: 65, status: "anomaly", name: "Ho Municipal Hospital", category: "Infrastructure", region: "Volta", beds: 120, lastAudit: "2025-10-05" },
-  { lat: 7.34, lng: -2.33, x: 35, y: 45, status: "uncertain", name: "Sunyani Regional Hospital", category: "Maternity", region: "Bono", beds: 200, lastAudit: "2025-12-10" },
-  { lat: 5.10, lng: -1.25, x: 40, y: 60, status: "validated", name: "Cape Coast Hospital", category: "Trauma", region: "Central", beds: 380, lastAudit: "2026-01-05" },
-  { lat: 8.06, lng: -1.73, x: 55, y: 38, status: "anomaly", name: "Kintampo Health Center", category: "Infrastructure", region: "Bono East", beds: 60, lastAudit: "2025-08-22" },
-  { lat: 10.79, lng: -0.85, x: 42, y: 35, status: "validated", name: "Bolgatanga Hospital", category: "Maternity", region: "Upper East", beds: 160, lastAudit: "2025-12-28" },
-  { lat: 5.67, lng: 0.02, x: 58, y: 80, status: "validated", name: "Tema General Hospital", category: "Trauma", region: "Greater Accra", beds: 300, lastAudit: "2026-02-03" },
-  { lat: 4.93, lng: -1.76, x: 38, y: 68, status: "uncertain", name: "Takoradi Hospital", category: "Infrastructure", region: "Western", beds: 240, lastAudit: "2025-11-15" },
-  { lat: 7.59, lng: -1.94, x: 47, y: 42, status: "validated", name: "Techiman Holy Family", category: "Maternity", region: "Bono East", beds: 280, lastAudit: "2026-01-10" },
+  { lat: 9.40, lng: -0.84, status: "validated", name: "Tamale Teaching Hospital", category: "Maternity", region: "Northern", beds: 420, lastAudit: "2026-01-15" },
+  { lat: 9.44, lng: -0.01, status: "anomaly", name: "Yendi Municipal Hospital", category: "Trauma", region: "Northern", beds: 85, lastAudit: "2025-11-02" },
+  { lat: 6.69, lng: -1.62, status: "validated", name: "Kumasi South Hospital", category: "Maternity", region: "Ashanti", beds: 310, lastAudit: "2026-02-01" },
+  { lat: 6.73, lng: -1.45, status: "uncertain", name: "Ejisu Clinic", category: "Infrastructure", region: "Ashanti", beds: 45, lastAudit: "2025-09-18" },
+  { lat: 5.54, lng: -0.23, status: "validated", name: "Korle Bu Teaching Hospital", category: "Maternity", region: "Greater Accra", beds: 1600, lastAudit: "2026-01-28" },
+  { lat: 5.56, lng: -0.19, status: "validated", name: "Ridge Hospital", category: "Trauma", region: "Greater Accra", beds: 450, lastAudit: "2026-01-20" },
+  { lat: 6.60, lng: 0.47, status: "anomaly", name: "Ho Municipal Hospital", category: "Infrastructure", region: "Volta", beds: 120, lastAudit: "2025-10-05" },
+  { lat: 7.34, lng: -2.33, status: "uncertain", name: "Sunyani Regional Hospital", category: "Maternity", region: "Bono", beds: 200, lastAudit: "2025-12-10" },
+  { lat: 5.10, lng: -1.25, status: "validated", name: "Cape Coast Hospital", category: "Trauma", region: "Central", beds: 380, lastAudit: "2026-01-05" },
+  { lat: 8.06, lng: -1.73, status: "anomaly", name: "Kintampo Health Center", category: "Infrastructure", region: "Bono East", beds: 60, lastAudit: "2025-08-22" },
+  { lat: 10.79, lng: -0.85, status: "validated", name: "Bolgatanga Hospital", category: "Maternity", region: "Upper East", beds: 160, lastAudit: "2025-12-28" },
+  { lat: 5.67, lng: 0.02, status: "validated", name: "Tema General Hospital", category: "Trauma", region: "Greater Accra", beds: 300, lastAudit: "2026-02-03" },
+  { lat: 4.93, lng: -1.76, status: "uncertain", name: "Takoradi Hospital", category: "Infrastructure", region: "Western", beds: 240, lastAudit: "2025-11-15" },
+  { lat: 7.59, lng: -1.94, status: "validated", name: "Techiman Holy Family", category: "Maternity", region: "Bono East", beds: 280, lastAudit: "2026-01-10" },
 ];
 
 const statusColors = {
@@ -79,8 +77,7 @@ const MapPanel = () => {
     }
   };
 
-  // Globe markers need lat/lng
-  const globeMarkers = filteredMarkers.map((m) => ({
+  const mapMarkers = filteredMarkers.map((m) => ({
     lat: m.lat,
     lng: m.lng,
     status: m.status,
@@ -97,9 +94,9 @@ const MapPanel = () => {
       <div className="p-4 md:p-5 border-b border-border space-y-3">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-base md:text-lg font-bold text-foreground">Facility Globe — Ghana</h3>
+            <h3 className="text-base md:text-lg font-bold text-foreground">Facility Map — Ghana</h3>
             <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
-              Drag to rotate · Scroll to zoom · Click markers
+              Drag to pan · Scroll to zoom · Click markers
             </p>
           </div>
           <div className="flex items-center gap-1 bg-secondary rounded-lg p-1 border border-border w-full sm:w-auto">
@@ -135,10 +132,10 @@ const MapPanel = () => {
         </div>
       </div>
 
-      {/* 3D Globe */}
+      {/* Google Maps */}
       <div className="relative">
-        <GlobeVisualization
-          markers={globeMarkers}
+        <GoogleMapView
+          markers={mapMarkers}
           onMarkerClick={handleMarkerClick}
           selectedMarkerName={selectedMarker?.name ?? null}
         />
