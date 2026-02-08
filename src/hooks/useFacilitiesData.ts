@@ -15,11 +15,6 @@ import {
   parseFacilities,
 } from "@/lib/facility-data";
 
-// In production, API serves facilities; in dev, VITE_FACILITIES_URL can override
-const SONIA_API_BASE =
-  (import.meta.env.VITE_SONIA_API_URL as string | undefined)?.trim() ?? "";
-const DEFAULT_FACILITIES_URL = `${SONIA_API_BASE}/api/facilities`;
-
 export type FacilitiesDataState = {
   facilities: Facility[];
   metrics: Metrics;
@@ -33,8 +28,13 @@ export type FacilitiesDataState = {
 };
 
 function getFacilitiesUrl(): string {
+  // In production: always use same-origin /api/facilities
+  // In dev: allow VITE_FACILITIES_URL override (e.g. /@fs/... for local file)
+  if (import.meta.env.PROD) {
+    return "/api/facilities";
+  }
   const envUrl = import.meta.env.VITE_FACILITIES_URL as string | undefined;
-  return envUrl?.trim() ? envUrl : DEFAULT_FACILITIES_URL;
+  return envUrl?.trim() || "/api/facilities";
 }
 
 export function useFacilitiesData(): FacilitiesDataState {
