@@ -126,8 +126,8 @@ const MapPanel = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border-b border-border gap-3">
         <div>
-          <h3 className="text-sm font-semibold text-foreground">Facility Map — Ghana</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <h3 className="text-base font-semibold text-foreground">Facility Map — Ghana</h3>
+          <p className="text-sm text-muted-foreground mt-0.5">
             Click markers to inspect · Scroll to zoom · Drag to pan
           </p>
         </div>
@@ -138,7 +138,7 @@ const MapPanel = () => {
                 key={cat}
                 onClick={() => { setActiveCategory(cat); setSelectedMarker(null); }}
                 className={cn(
-                  "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+                  "px-3 py-1.5 text-sm font-medium rounded-md transition-all",
                   activeCategory === cat
                     ? "bg-primary text-primary-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
@@ -205,8 +205,8 @@ const MapPanel = () => {
                 {/* Hover Tooltip */}
                 {hoveredMarker === marker.name && selectedMarker?.name !== marker.name && (
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-card border border-border rounded-lg px-3 py-2 shadow-lg z-20 whitespace-nowrap animate-fade-in">
-                    <p className="text-xs font-medium text-foreground">{marker.name}</p>
-                    <p className={cn("text-[10px] font-medium capitalize mt-0.5", statusText[marker.status])}>
+                    <p className="text-sm font-medium text-foreground">{marker.name}</p>
+                    <p className={cn("text-xs font-medium capitalize mt-0.5", statusText[marker.status])}>
                       {marker.status} · {marker.region}
                     </p>
                   </div>
@@ -242,13 +242,13 @@ const MapPanel = () => {
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-2">
                 <div className={cn("w-2.5 h-2.5 rounded-full", statusColors[selectedMarker.status])} />
-                <h4 className="text-sm font-semibold text-foreground">{selectedMarker.name}</h4>
+                <h4 className="text-base font-semibold text-foreground">{selectedMarker.name}</h4>
               </div>
               <button onClick={() => setSelectedMarker(null)} className="text-muted-foreground hover:text-foreground transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-3 text-xs">
+            <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <p className="text-muted-foreground">Region</p>
                 <p className="font-medium text-foreground">{selectedMarker.region}</p>
@@ -276,7 +276,7 @@ const MapPanel = () => {
             </div>
             <button
               onClick={() => focusOnMarker(selectedMarker)}
-              className="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors"
+              className="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-primary/10 text-primary text-sm font-medium hover:bg-primary/20 transition-colors"
             >
               <Locate className="w-3.5 h-3.5" />
               Focus & Zoom
@@ -288,13 +288,13 @@ const MapPanel = () => {
       {/* Facility List Bar */}
       <div className="border-t border-border px-4 py-2.5 overflow-x-auto">
         <div className="flex items-center gap-2 min-w-max">
-          <span className="text-[10px] text-muted-foreground uppercase tracking-wider mr-1 flex-shrink-0">Facilities:</span>
+          <span className="text-xs text-muted-foreground uppercase tracking-wider mr-2 flex-shrink-0">Facilities:</span>
           {filteredMarkers.map((m) => (
             <button
               key={m.name}
               onClick={() => focusOnMarker(m)}
               className={cn(
-                "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-medium border transition-all whitespace-nowrap",
+                "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium border transition-all whitespace-nowrap",
                 selectedMarker?.name === m.name
                   ? "border-primary/40 bg-primary/10 text-primary"
                   : "border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-border"
@@ -311,17 +311,17 @@ const MapPanel = () => {
       <div className="flex items-center gap-5 px-4 py-3 border-t border-border">
         <div className="flex items-center gap-1.5">
           <div className="w-2 h-2 rounded-full bg-success" />
-          <span className="text-[10px] text-muted-foreground">Validated ({counts.validated})</span>
+          <span className="text-xs text-muted-foreground">Validated ({counts.validated})</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-2 h-2 rounded-full bg-warning" />
-          <span className="text-[10px] text-muted-foreground">Uncertain ({counts.uncertain})</span>
+          <span className="text-xs text-muted-foreground">Uncertain ({counts.uncertain})</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-2 h-2 rounded-full bg-danger" />
-          <span className="text-[10px] text-muted-foreground">Anomaly ({counts.anomaly})</span>
+          <span className="text-xs text-muted-foreground">Anomaly ({counts.anomaly})</span>
         </div>
-        <div className="ml-auto text-[10px] font-mono text-muted-foreground/60">
+        <div className="ml-auto text-xs font-mono text-muted-foreground">
           {filteredMarkers.length} facilities
         </div>
       </div>

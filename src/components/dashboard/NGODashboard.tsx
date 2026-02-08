@@ -9,8 +9,8 @@ const NGODashboard = () => {
     <div className="space-y-4 max-w-7xl">
       {/* Header */}
       <div>
-        <h1 className="text-lg font-bold text-foreground tracking-tight">NGO Dashboard</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">NGO Dashboard</h1>
+        <p className="text-base text-muted-foreground mt-1">
           Healthcare facility capabilities — Ghana
         </p>
       </div>
