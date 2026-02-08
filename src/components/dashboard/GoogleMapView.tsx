@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { GoogleMap, useJsApiLoader, MarkerF, InfoWindowF } from "@react-google-maps/api";
 import { cn } from "@/lib/utils";
-import { Map, Satellite, Mountain, Layers } from "lucide-react";
+import { Map, Satellite, Mountain, Layers, LocateFixed, Loader2 } from "lucide-react";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyBjIIDtqZBwTXwYEI6o-OzDk6WshdnKT40";
 
@@ -97,6 +97,24 @@ const GoogleMapView = ({ markers, selectedMarkerName, onMarkerClick }: GoogleMap
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [hoveredMarker, setHoveredMarker] = useState<string | null>(null);
   const [mapTypeId, setMapTypeId] = useState<MapTypeId>("roadmap");
+  const [locating, setLocating] = useState(false);
+  const [userLocation, setUserLocation] = useState<google.maps.LatLng | null>(null);
+
+  const handleGeolocate = useCallback(() => {
+    if (!navigator.geolocation || !map) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const loc = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+        setUserLocation(loc);
+        map.panTo(loc);
+        map.setZoom(12);
+        setLocating(false);
+      },
+      () => setLocating(false),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }, [map]);
 
   const mapOptions = useMemo<google.maps.MapOptions>(
     () => ({
@@ -208,6 +226,23 @@ const GoogleMapView = ({ markers, selectedMarkerName, onMarkerClick }: GoogleMap
             </MarkerF>
           );
         })}
+
+        {/* User location marker */}
+        {userLocation && (
+          <MarkerF
+            position={userLocation}
+            icon={{
+              path: google.maps.SymbolPath.CIRCLE,
+              fillColor: "#3b82f6",
+              fillOpacity: 1,
+              strokeColor: "#ffffff",
+              strokeWeight: 3,
+              scale: 10,
+            }}
+            zIndex={200}
+            title="Tu ubicación"
+          />
+        )}
       </GoogleMap>
 
       {/* Map Type Selector */}
@@ -229,6 +264,20 @@ const GoogleMapView = ({ markers, selectedMarkerName, onMarkerClick }: GoogleMap
           </button>
         ))}
       </div>
+
+      {/* Geolocate Button */}
+      <button
+        onClick={handleGeolocate}
+        disabled={locating}
+        className="absolute top-3 right-3 bg-card/95 border border-border rounded-lg p-2 backdrop-blur-md shadow-lg z-10 text-muted-foreground hover:text-foreground hover:bg-secondary transition-all disabled:opacity-60"
+        title="Mi ubicación"
+      >
+        {locating ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <LocateFixed className={cn("w-4 h-4", userLocation && "text-primary")} />
+        )}
+      </button>
     </div>
   );
 };
