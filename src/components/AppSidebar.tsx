@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LayoutDashboard, Shield, ChevronLeft, ChevronRight, Activity, Menu, X } from "lucide-react";
+import { LayoutDashboard, Shield, ChevronLeft, ChevronRight, Activity, Menu, X, HeartPulse } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AppSidebarProps {
@@ -21,7 +21,7 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 h-16 border-b border-sidebar-border">
         <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center flex-shrink-0 shadow-sm">
-          <span className="text-primary-foreground font-bold text-sm">VC</span>
+          <HeartPulse className="w-5 h-5 text-primary-foreground" />
         </div>
         {(!collapsed || mobileOpen) && (
           <div className="min-w-0 flex-1">
@@ -121,7 +121,7 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
           <Menu className="w-5 h-5" />
         </button>
         <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center flex-shrink-0">
-          <span className="text-primary-foreground font-bold text-xs">VC</span>
+          <HeartPulse className="w-4 h-4 text-primary-foreground" />
         </div>
         <span className="text-sm font-bold text-sidebar-foreground">VirtueConnect</span>
       </div>
